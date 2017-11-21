@@ -218,6 +218,18 @@ namespace GraphicsMathUnitTests
 			Assert::AreEqual(v3c[2], (float)18);
 		}
 
+		TEST_METHOD(Vector_Scalar_Division_1)
+		{
+			Vector<3> v3a{ 2, 4, 6 };
+			float s = 2;
+
+			auto v3b = v3a / s;
+
+			Assert::AreEqual(v3b[0], one);
+			Assert::AreEqual(v3b[1], two);
+			Assert::AreEqual(v3b[2], three);
+		}
+
 
 		TEST_METHOD(Vector_Equality)
 		{
@@ -276,6 +288,22 @@ namespace GraphicsMathUnitTests
 			Assert::AreEqual(v3e[2], v3f[2]);
 		}
 
+		TEST_METHOD(Vector_Normal_1)
+		{
+			Vector<3> v3a{ 0, 0, 1 };
+
+			auto v3b = v3a.normal();
+			v3a.normalize();
+
+			Assert::AreEqual(v3b[0], zero);
+			Assert::AreEqual(v3b[1], zero);
+			Assert::AreEqual(v3b[2], one);
+
+			Assert::AreEqual(v3a[0], zero);
+			Assert::AreEqual(v3a[1], zero);
+			Assert::AreEqual(v3a[2], one);
+		}
+
 		TEST_METHOD(Vector_Normalize)
 		{
 			Vector<3> v3a{1, 2, 3};
@@ -285,6 +313,46 @@ namespace GraphicsMathUnitTests
 			std::cout << v3a;
 
 			Assert::AreEqual(v3a[0], (float)1);
+		}
+
+		TEST_METHOD(Vector_Dimension_Change_1)
+		{
+			Vector<2> v2{ 1, 2 };
+			auto v3 = higherDimension(v2, 3);
+
+			Assert::AreEqual(v3[0], one);
+			Assert::AreEqual(v3[1], two);
+			Assert::AreEqual(v3[2], three);
+		}
+
+		TEST_METHOD(Vector_Dimension_Change_2)
+		{
+			Vector<3> v3{ 1, 2, 3 };
+			auto v4 = higherDimension(v3, 4);
+
+			Assert::AreEqual(v4[0], one);
+			Assert::AreEqual(v4[1], two);
+			Assert::AreEqual(v4[2], three);
+			Assert::AreEqual(v4[3], four);
+		}
+
+		TEST_METHOD(Vector_Dimension_Change_3)
+		{
+			Vector<3> v3{ 1, 2, 3 };
+			auto v2 = lowerDimension(v3);
+
+			Assert::AreEqual(v2[0], one);
+			Assert::AreEqual(v2[1], two);
+		}
+
+		TEST_METHOD(Vector_Dimension_Change_4)
+		{
+			Vector<4> v4{ 1, 2, 3, 4 };
+			auto v3 = lowerDimension(v4);
+
+			Assert::AreEqual(v3[0], one);
+			Assert::AreEqual(v3[1], two);
+			Assert::AreEqual(v3[2], three);
 		}
 	};
 }

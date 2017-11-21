@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VECTOR_H
+#define VECTOR_H
 
 #include <vector>
 #include <string>
@@ -6,7 +7,7 @@
 
 namespace GraphicsMath
 {
-	const float PI = 3.14159f;
+	static const float PI = 3.14159f;
 
 #pragma region Vector Class Definition
 
@@ -76,13 +77,19 @@ namespace GraphicsMath
 		std::vector<float>::const_iterator end() const;
 
 		Vector operator +(const Vector&) const;
+		Vector operator +(const float) const;
 		Vector operator -(const Vector&) const;
+		Vector operator -(const float) const;
 		Vector operator *(const Vector&) const;
 		Vector operator *(const float) const;
+		Vector operator /(float) const;
 		void operator +=(const Vector&);
+		void operator +=(const float);
 		void operator -=(const Vector&);
+		void operator -=(const float);
 		void operator *=(const Vector&);
 		void operator *=(const float);
+		void operator /=(const float);
 		
 		bool operator ==(const Vector&) const;
 		bool operator !=(const Vector&) const;
@@ -97,7 +104,9 @@ namespace GraphicsMath
 		Vector crossProduct(const Vector&) const;
 		Vector normal() const;
 		void normalize();
-		
+		Vector homogenous() const;
+		void homogenize();
+
 		std::string to_string() const;
 
 		friend std::ostream& operator <<(std::ostream& os, const Vector& v)
@@ -241,11 +250,31 @@ namespace GraphicsMath
 	}
 
 	template<int size>
+	Vector<size> Vector<size>::operator +(const float s) const
+	{
+		Vector<size> r;
+		for (int i = 0; i < size; ++i)
+			r[i] = m_data[i] + s;
+
+		return r;
+	}
+
+	template<int size>
 	Vector<size> Vector<size>::operator -(const Vector<size>& v) const
 	{
 		Vector<size> r;
 		for (int i = 0; i < size; ++i)
 			r[i] = m_data[i] - v[i];
+
+		return r;
+	}
+
+	template<int size> 
+	Vector<size> Vector<size>::operator -(const float s) const
+	{
+		Vector<size> r;
+		for (int i = 0; i < size; ++i)
+			r[i] = m_data[i] - s;
 
 		return r;
 	}
@@ -271,6 +300,19 @@ namespace GraphicsMath
 	}
 
 	template<int size>
+	Vector<size> Vector<size>::operator /(const float s) const
+	{
+		if (s == 0)
+			throw std::runtime_error("Cannot divide vector by zero scalar.");
+
+		Vector<size> r;
+		for (int i = 0; i < size; ++i)
+			r[i] = m_data[i] / s;
+
+		return r;
+	}
+
+	template<int size>
 	void Vector<size>::operator +=(const Vector<size>& v)
 	{
 		for (int i = 0; i < size; ++i)
@@ -278,10 +320,24 @@ namespace GraphicsMath
 	}
 
 	template<int size>
+	void Vector<size>::operator +=(float s)
+	{
+		for (int i = 0; i < size; ++i)
+			m_data[i] += s;
+	}
+
+	template<int size>
 	void Vector<size>::operator -=(const Vector<size>& v)
 	{
 		for (int i = 0; i < size; ++i)
 			m_data[i] -= v[i];
+	}
+
+	template<int size>
+	void Vector<size>::operator -=(const float s)
+	{
+		for (int i = 0; i < size; ++i)
+			m_data[i] -= s;
 	}
 
 	template<int size>
@@ -296,6 +352,16 @@ namespace GraphicsMath
 	{
 		for (int i = 0; i < size; ++i)
 			m_data[i] *= s;
+	}
+
+	template<int size>
+	void Vector<size>::operator /=(const float s)
+	{
+		if (s == 0)
+			throw std::runtime_error("Cannot divide vector by zero scalar.");
+
+		for (int i = 0; i < size; ++i)
+			m_data[i] /= s;
 	}
 
 #pragma endregion
@@ -418,8 +484,8 @@ namespace GraphicsMath
 	{
 		float m = this->magnitude();
 
-		Vector<size> v();
-		for (int i = 0; i < m_size; ++i)
+		Vector<size> v;
+		for (int i = 0; i < size; ++i)
 			v[i] = m_data[i] / m;
 
 		return v;
@@ -430,29 +496,30 @@ namespace GraphicsMath
 	{
 		float m = this->magnitude();
 
-		for (int i = 0; i < m_size; ++i)
+		for (int i = 0; i < size; ++i)
 			m_data[i] /= m;
 	}
 
+	template<int size>
+	Vector<size> Vector<size>::homogenous() const
+	{
+		Vector result{ *this };
+		result.homogenize();
+
+		return result;
+	}
+
+	template<int size>
+	void Vector<size>::homogenize()
+	{
+		if (m_data[size - 1] != 0)
+		{
+			for (int i = 0; i < size - 1; ++i)
+				m_data[i] /= m_data[size - 1];
+		}
+	}
+
 #pragma endregion
-
-
-	//// Vector4 provides two static methods to create a Vector4 from a Vector3.
-	////	1. for positions : the w coordinate is 1
-	////	2. for directions : the w coordinate is 0
-
-	//class Vector4 : public Vector
-	//{
-	//public:
-	//	static Vector4 positionVector(const Vector3&);
-	//	static Vector4 directionVector(const Vector3&);
-
-	//	Vector4();
-	//	Vector4(float, float, float, float = 1);
-
-	//	Vector4(const Vector4&);
-	//	Vector4& operator=(const Vector4&);
-	//};
 
 #pragma region Standard Methods
 
@@ -464,4 +531,18 @@ namespace GraphicsMath
 
 #pragma endregion
 
+#pragma region Vector Conversion Methods
+
+	Vector<3> lowerDimension(const Vector<4>& v);
+
+	Vector<2> lowerDimension(const Vector<3>& v);
+
+	Vector<4> higherDimension(const Vector<3>& v, float w);
+
+	Vector<3> higherDimension(const Vector<2>& v, float z);
+
+#pragma endregion
+
 }
+
+#endif

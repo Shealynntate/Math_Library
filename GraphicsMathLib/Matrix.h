@@ -1,6 +1,6 @@
-#pragma once
+#ifndef MATRIX_H
+#define MAXRIX_H
 
-#include <vector>
 #include <algorithm>
 #include <iterator>
 
@@ -126,7 +126,7 @@ namespace GraphicsMath
 
 #pragma region Transformation Matrix Constructors
 
-	Matrix<4, 4> Matrix<4, 4>::Scale(Vector<3> v)
+	inline Matrix<4, 4> Matrix<4, 4>::Scale(Vector<3> v)
 	{
 		Matrix<4, 4> result;
 
@@ -136,7 +136,7 @@ namespace GraphicsMath
 		return result;
 	}
 
-	Matrix<4, 4> Matrix<4, 4>::Translation(Vector<3> v)
+	inline Matrix<4, 4> Matrix<4, 4>::Translation(Vector<3> v)
 	{
 		Matrix<4, 4> result;
 
@@ -146,7 +146,7 @@ namespace GraphicsMath
 		return result;
 	}
 
-	Matrix<4, 4> Matrix<4, 4>::Rotation(Vector<3> axis, float theta)
+	inline Matrix<4, 4> Matrix<4, 4>::Rotation(Vector<3> axis, float theta)
 	{
 		Matrix<4, 4> result;
 		
@@ -168,7 +168,7 @@ namespace GraphicsMath
 
 #pragma region Transformation Matrix Inversion
 
-	Matrix<4, 4> Matrix<4, 4>::ScaleInverse(Matrix<4, 4> m)
+	inline Matrix<4, 4> Matrix<4, 4>::ScaleInverse(Matrix<4, 4> m)
 	{
 		auto result{ m };
 
@@ -178,7 +178,7 @@ namespace GraphicsMath
 		return result;
 	}
 
-	Matrix<4, 4> Matrix<4, 4>::TranslationInverse(Matrix<4, 4> m)
+	inline Matrix<4, 4> Matrix<4, 4>::TranslationInverse(Matrix<4, 4> m)
 	{
 		auto result{ m };
 
@@ -188,12 +188,12 @@ namespace GraphicsMath
 		return result;
 	}
 
-	Matrix<4, 4> Matrix<4, 4>::RotationInverse(Matrix<4, 4> m)
+	inline Matrix<4, 4> Matrix<4, 4>::RotationInverse(Matrix<4, 4> m)
 	{
 		return m.transposition();
 	}
 
-	Matrix<4, 4> Matrix<4, 4>::OrthographicProjection(float l, float r, float t, float b, float zN, float zF)
+	inline Matrix<4, 4> Matrix<4, 4>::OrthographicProjection(float l, float r, float t, float b, float zN, float zF)
 	{
 		Matrix<4, 4> result;
 
@@ -212,7 +212,7 @@ namespace GraphicsMath
 		return result;
 	}
 
-	Matrix<4, 4> Matrix<4, 4>::PerspectiveProjection(float fovy, float aspect, float zNear, float zFar)
+	inline Matrix<4, 4> Matrix<4, 4>::PerspectiveProjection(float fovy, float aspect, float zNear, float zFar)
 	{
 		Matrix<4, 4> result;
 
@@ -274,7 +274,7 @@ namespace GraphicsMath
 
 	template<int row, int col>
 	Matrix<row, col>::Matrix()
-		: m_cols{ col, {} }
+		: m_cols{ col, std::initializer_list<float>{} }
 	{
 		checkValidMatrix();
 
@@ -402,9 +402,9 @@ namespace GraphicsMath
 	{
 		Vector<col> result;
 
-		for (int i = 0; i < col; ++i)
+		for (int j = 0; j < row; ++j)
 		{
-			for (int j = 0; j < row; ++j)
+			for (int i = 0; i < col; ++i)
 				result[i] += v[j] * m_cols[j][i];
 		}
 
@@ -433,19 +433,19 @@ namespace GraphicsMath
 
 #pragma region Determinant
 
-	float Matrix<2, 2>::determinant() const
+	inline float Matrix<2, 2>::determinant() const
 	{
 		return m_cols[0][0] * m_cols[1][1] - m_cols[0][1] * m_cols[1][0];
 	}
 
-	float Matrix<3, 3>::determinant() const
+	inline float Matrix<3, 3>::determinant() const
 	{
 		return m_cols[0][0] * m_cols[1][1] * m_cols[2][2] + m_cols[0][1] * m_cols[1][2] * m_cols[2][0] +
 			   m_cols[0][2] * m_cols[1][0] * m_cols[2][1] - m_cols[0][0] * m_cols[1][2] * m_cols[2][1] -
 			   m_cols[0][2] * m_cols[1][1] * m_cols[2][0] - m_cols[0][1] * m_cols[1][0] * m_cols[2][2];
 	}
 
-	float Matrix<4, 4>::determinant() const
+	inline float Matrix<4, 4>::determinant() const
 	{
 		return
 			m_cols[0][0] * m_cols[1][1] * m_cols[2][2] * m_cols[3][3] + m_cols[0][0] * m_cols[2][1] * m_cols[3][2] * m_cols[1][3] +
@@ -466,7 +466,7 @@ namespace GraphicsMath
 
 #pragma region Inversion
 
-	Matrix<2, 2> Matrix<2, 2>::inverse() const
+	inline Matrix<2, 2> Matrix<2, 2>::inverse() const
 	{
 		float det = determinant();
 
@@ -480,7 +480,7 @@ namespace GraphicsMath
 		return m;
 	}
 
-	Matrix<3, 3> Matrix<3, 3>::inverse() const
+	inline Matrix<3, 3> Matrix<3, 3>::inverse() const
 	{
 		float det = determinant();
 
@@ -502,7 +502,7 @@ namespace GraphicsMath
 		return m;
 	}
 
-	Matrix<4, 4> Matrix<4, 4>::inverse() const
+	inline Matrix<4, 4> Matrix<4, 4>::inverse() const
 	{
 		float det = determinant();
 
@@ -595,5 +595,6 @@ namespace GraphicsMath
 
 }
 
+#endif
 
 
